@@ -1,0 +1,145 @@
+<!-- Contenedor principal del administrador de promociones -->
+<div class="promotions-admin-container">
+  <!-- Sección de encabezado con título y botón para crear promoción -->
+  <div class="header-section">
+  <h1>Administrador de Promociones</h1>
+  <button class="create-promotion-btn" (click)="navigateToCreatePromotion()">Crear Nueva Promoción</button>
+  </div>
+
+  <!-- Componente de filtro de promociones -->
+  <app-promotion-filter (filterChange)="onFilterChange($event)"></app-promotion-filter>
+
+  <!-- Tabla de promociones, se muestra si no está cargando ni hay error -->
+  <div class="promotions-table-container" *ngIf="!loading && !error; else loadingOrError">
+  <app-promotions-list
+    [promotions]="filteredPromotions"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+    (toggleStatus)="onToggleStatus($event)">
+  </app-promotions-list>
+  <!-- Aquí podrías añadir la lógica de paginación si no está en PromotionsListComponent -->
+  </div>
+
+  <!-- Plantilla para mostrar mensajes de carga o error -->
+  <ng-template #loadingOrError>
+  <div *ngIf="loading" class="loading-message">Cargando promociones...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+  </ng-template>
+</div>
+
+<!-- Sección de filtros para buscar y filtrar promociones -->
+<div class="filters-section">
+  <!-- Barra de búsqueda por nombre -->
+  <div class="search-bar">
+  <input
+    type="text"
+    placeholder="Buscar por nombre..."
+    [value]="filterOptions.searchTerm"
+    (input)="onSearchTermChange($event)">
+  </div>
+
+  <!-- Filtro por tipo de promoción -->
+  <div class="dropdown-filter">
+  <select
+    [ngModel]="filterOptions.typeFilter"
+    (ngModelChange)="onTypeFilterChange($event)">
+    <option *ngFor="let type of promotionTypes" [value]="type">{{ type }}</option>
+  </select>
+  </div>
+
+  <!-- Filtro por estado de promoción -->
+  <div class="dropdown-filter">
+  <select
+    [ngModel]="filterOptions.stateFilter"
+    (ngModelChange)="onStateFilterChange($event)">
+    <option *ngFor="let state of promotionStates" [value]="state">{{ state }}</option>
+  </select>
+  </div>
+</div>
+
+<!-- Fila de promoción individual (ejemplo de cómo se muestra una promoción) -->
+<tr class="promotion-row">
+  <td>{{ promotion.nombre }}</td>
+  <td>{{ promotion.tipo }}</td>
+  <td>
+  <!-- Badge para el estado -->
+  <span class="status-badge {{ statusClass }}">{{ promotion.estado }}</span>
+  </td>
+  <td>{{ formatValidityDate() }}</td>
+  <td>{{ promotion.beneficio }}</td>
+  <td class="actions-cell">
+  <button class="edit-btn" (click)="onEdit()">Editar</button>
+  <button class="delete-btn" (click)="onDelete()">Eliminar</button>
+  <button class="action-btn {{ toggleStatusButtonClass }}" (click)="onToggleStatus()">
+    {{ toggleStatusButtonText }}
+  </button>
+  </td>
+</tr>
+
+<!-- Contenedor de la tabla de promociones -->
+<div class="promotions-table-container">
+  <table class="promotions-table">
+  <thead>
+    <tr>
+    <th>NOMBRE</th>
+    <th>TIPO</th>
+    <th>ESTADO</th>
+    <th>VALIDEZ</th>
+    <th>BENEFICIO</th>
+    <th>ACCIONES</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Iteración sobre las promociones usando ngFor y pasando cada una al componente PromotionItem -->
+    <app-promotion-item
+    *ngFor="let promo of promotions"
+    [promotion]="promo"
+    (edit)="edit.emit($event)"
+    (delete)="delete.emit($event)"
+    (toggleStatus)="toggleStatus.emit($event)">
+    </app-promotion-item>
+
+    <!-- Mensaje si la lista de promociones está vacía -->
+    <tr *ngIf="promotions.length === 0">
+    <td colspan="6" style="text-align: center;">No hay promociones que mostrar según los filtros aplicados.</td>
+    </tr>
+  </tbody>
+  </table>
+  <!-- Controles de paginación -->
+  <div class="pagination-controls">
+  <button class="prev-btn" (click)="previousPage()" [disabled]="isFirstPage">Anterior</button>
+  <span>Página {{ currentPage }} de {{ totalPages }}</span>
+  <button class="next-btn" (click)="nextPage()" [disabled]="isLastPage">Siguiente</button>
+  </div>
+</div>
+
+<!-- Otra fila de promoción individual (puede ser redundante) -->
+<tr class="promotion-row">
+  <td>{{ promotion.nombre }}</td>
+  <td>{{ promotion.tipo }}</td>
+  <td>
+  <!-- Badge para el estado -->
+  <span class="status-badge {{ statusClass }}">{{ promotion.estado }}</span>
+  </td>
+  <td>{{ formatValidityDate() }}</td>
+  <td>{{ promotion.beneficio }}</td>
+  <td class="actions-cell">
+  <button class="edit-btn" (click)="onEdit()">Editar</button>
+  <button class="delete-btn" (click)="onDelete()">Eliminar</button>
+  <button class="action-btn {{ toggleStatusButtonClass }}" (click)="onToggleStatus()">
+    {{ toggleStatusButtonText }}
+  </button>
+  </td>
+</tr>
+
+<div class="promotion"><tr>movimientos</tr>
+<tr>descuentos</tr>
+<tr>promociones</tr></div>
+<div class="promotion {{toggleStatusButtonClass}}" (click="onToggleStatus")><span>
+  pagina{{currentPage}} de {{toggleStatusButtonClass}}
+</span></div>
+
+<button class="edit-btn"(click)="onEdit()">Editar</button>
+<button class="action-btn"(click)="onDelete">eliminar</button>
+<button class="action-btn"(click)="onCreate"></button>
+<button class="action-btn" (click)=""></button>
